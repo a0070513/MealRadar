@@ -11,6 +11,7 @@ import streamlit as st
 
 MODEL_PATH = Path(__file__).resolve().parent / "models" / "mealradar_pipeline.joblib"
 METRICS_PATH = Path(__file__).resolve().parent / "reports" / "metrics.json"
+EXAMPLE_CSV_PATH = Path(__file__).resolve().parent / "examples" / "reviews.csv"
 LABEL_NAMES = {0: "负面", 1: "正面"}
 MAX_COMMENT = 5000
 MAX_BATCH = 5000
@@ -96,7 +97,14 @@ def safe_csv_cell(value):
 
 
 def batch_reviews():
-    st.write("上传包含 `review` 列的 CSV。单次最多 5,000 条，文件最大 10 MB。")
+    st.write("上传 CSV 批量分析评论。单次最多 5,000 条，文件最大 10 MB。")
+    st.info("CSV 格式要求：第一行是表头，评论所在列的表头必须为小写 `review`，从第二行开始填写评论，每条评论占一条记录。")
+    st.caption("想先试用？下载示例 CSV，再在下方上传，点击“分析整批评论”。")
+    if EXAMPLE_CSV_PATH.is_file():
+        st.download_button("下载示例 CSV（8 条评论）", EXAMPLE_CSV_PATH.read_bytes(),
+                           "reviews.csv", "text/csv", key="download_example_csv")
+    else:
+        st.caption("示例文件暂不可用，你仍可上传自己的 CSV。")
     upload = st.file_uploader("评论 CSV", type=["csv"], max_upload_size=10)
     if upload is None:
         return
@@ -143,7 +151,10 @@ def batch_reviews():
     download["review"] = download.review.map(safe_csv_cell)
     st.download_button("下载全部预测结果", download.to_csv(index=False).encode("utf-8-sig"),
                        "mealradar_predictions.csv", "text/csv")
-    st.caption("空白或超过 5,000 字符的评论标为未分析。分数为模型估计值。")
+    st.caption("空白或超过 5,000 字符的评论标为未分析。")
+    st.caption("分数说明：“正面估计分数”是模型估计的正面概率，范围为 0～1。越接近 1，模型越倾向正面；越接近 0，越倾向负面。")
+    st.caption("当前模型以 0.5 为默认分界：大于 0.5 预测为正面，小于或等于 0.5 预测为负面。表格显示值可能经过四舍五入，分类以模型原始输出为准。")
+    st.caption("分数未经独立概率校准，不代表预测一定正确；接近 0.5 的评论处在分类分界附近，建议结合原文判断。")
 
 
 st.set_page_config(page_title="食评雷达 MealRadar", layout="centered")
