@@ -1,0 +1,24 @@
+{
+  "model_included": false,
+  "note": "Code review package only; model distribution pending. Not independently deployable.",
+  "sha256": {
+    "app.py": "da0bbbbc2f96bc708c03ed5d709476e846cc94cf0f87110d97c4fdd528011935",
+    "requirements.txt": "9a6dd17d5e929f91c18467a7f14ff0c4feb895b76163c53fc10d514e566e9f0d",
+    ".gitignore": "d388ab193771e3972306f33d621d622afe2b13b5b32f884d9c7276a393fbd841",
+    "README.md": "aabc491943d3a12763ccd92e41f1f7cf7cf7d3aae8809d8a41a236d289f01bbf",
+    "SUBMISSION_INTRO.md": "8e4b2fc8d344bfb12a230dcbeb7ea09e2fa781e2b5c5184cdca000b7e59a7cd1",
+    "DEPLOYMENT.md": "fa1209b81f1e4055a7443af9ee0bf659eb89c3de229f1bfa4d37c2413dfbbee8",
+    "data/README.md": "e34632d2c8ff13065eb1818b87ad87445e35ec7d3c41bbf5b29f18f9496aefc4",
+    "review_rules_check.py": "5a7aaebd493ca10cb72d096335730e309e5d84743a4a1786c2cc786564a38f30",
+    "apply_review_rules.py": "f3323aa1e3f2ff0ef30b0429b7659121e462144aa943c5df7ea6f83b1a2d99a5",
+    "clean_and_save.py": "2bb95d1c8c31ca1cf978a84a2e22bf6a8f2dbfdc133f12fb59f57b8e3363376b",
+    "split_dataset.py": "185f61e24b063a6acdc83b18fda45f882a20b7bc6a77dc3ce6f8cd649917d502",
+    "inspect_text_features.py": "32880e049d5e7f1a844abe986ab43c51f4328136b565c3df2c7a2f290c419773",
+    "train_baseline.py": "78c959c89d060902c280246937475b1125ba473e329fa4e41c623adb03995f78",
+    "reports/metrics.json": "b0252520f404207666971707134bddacfca476dc1c6b10f45c635fc4cc07cfce",
+    "reports/confusion_matrix.png": "8e529f7de848fc42435a30d7be782cdce0aecc021cba739a1ee439e65f18cd1a",
+    "reports/error_case.json": "6b846a940a8c29f9228be70782f0f616460025ac3bbc5b5993f60228dc83d036",
+    "reports/error_analysis.csv": "9d4aa48d613be0569fac084ea108aff2c53a15e18c3633d62085d490e16067bb",
+    "tests/test_delivery.py": "7d4f27448173330027d353819ed1f4a55ec65d13c3f6a2ff39de9850acf39b9b"
+  }
+}
