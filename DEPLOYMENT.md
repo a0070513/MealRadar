@@ -1,10 +1,10 @@
 # 发布准备与待办
 
-已建立私有仓库 https://github.com/a0070513/MealRadar ，未部署公网。继续采用 Streamlit 和现有 Python 模型。
+已建立私有仓库 https://github.com/a0070513/MealRadar 。采用 Streamlit 和现有 Python 模型。
 
-1. GitHub 账户与仓库已建立。上传范围为 delivery/source_review/ 中的代码与汇总材料，不上传整个工作区。私有仓库提交给评审前需配置访问权限，或在确认分发范围后公开代码。
-2. 数据源未提供已确认的模型分发条件，模型暂留本机。先厘清模型发布或托管使用条件；私有仓库本身不等于解决许可问题。不擅自换数据集或重新训练。
-3. 条件明确后，将已确认的普通 LR 放到 models/mealradar_pipeline.joblib，核对 README 中哈希。当前 .gitignore 排除模型，确定可上传后需明确调整。
+1. GitHub 账户与仓库已建立。上传范围为 delivery/source_review/ 中的代码与汇总材料，不上传整个工作区。
+2. 数据源未提供已确认的模型分发条件。
+3. 条件明确后，将已确认的普通 LR 放到 models/mealradar_pipeline.joblib，核对 README 中哈希。
 4. 在 Streamlit Community Cloud 连接仓库，选择实际分支、app.py 和 Python 3.11。使用 requirements.txt 的训练环境版本；安装失败先查看日志，不随意升级/降级模型依赖。
 5. 部署成功后记录真实地址，通过公网验收两类示例、空输入、连续预测、刷新、批量上传/筛选/下载。本地自动检查不能代替公网验收。
 6. 在最终提交填入网站与仓库链接，更新工作介绍的部署状态。
