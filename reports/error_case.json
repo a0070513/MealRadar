@@ -3,7 +3,8 @@
   "review": "就还行，没有很好吃",
   "reference_label": 0,
   "predicted_label": 1,
-  "pipeline_sha256": "8519ce0188b3a4cf7e56d34f9d5e295b2fc9e70f641042b60e1c1aab9c576324",
+  "pipeline_sha256": "f3a14ef2a2003e7c007ed02738bf6568e167ca0d6c8b332c9482ffbde526ff06",
   "analysis": "字符片段最长为 3，无法整体表示“没有很好吃”的否定范围；局部正面片段可能干扰判断。这是原因分析，不是因果证明。",
-  "future_work": "未来可研究否定范围与上下文建模，本次不更改模型。"
+  "future_work": "未来可研究否定范围与上下文建模，本次不更改模型。",
+  "verification": "已用用户2026-11-17 Balanced模型核对该验证案例，仍预测为正面；非测试样本。"
 }

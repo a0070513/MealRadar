@@ -1,0 +1,190 @@
+{
+  "selected_model": "ordinary_logistic_regression",
+  "pipeline_sha256": "8519ce0188b3a4cf7e56d34f9d5e295b2fc9e70f641042b60e1c1aab9c576324",
+  "model_parameters": {
+    "C": 1.0,
+    "class_weight": null,
+    "dual": false,
+    "fit_intercept": true,
+    "intercept_scaling": 1,
+    "l1_ratio": 0.0,
+    "max_iter": 1000,
+    "n_jobs": null,
+    "penalty": "deprecated",
+    "random_state": 42,
+    "solver": "liblinear",
+    "tol": 0.0001,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "model_file_size_bytes": 4201952,
+  "test_sha256": "bea8ef49f09f2ec1073ff943b094d3ba17d9c1939159fcfd031d9812596379e5",
+  "evaluated_at_Asia_Shanghai": "2026-11-14T14:01:35.581800+08:00",
+  "python_version": "3.11.16 | packaged by Anaconda, Inc. | (main, Aug 27 2026, 14:36:16) [MSC v.1942 64 bit (AMD64)]",
+  "sklearn_version": "1.9.1",
+  "labels": {
+    "0": "负面",
+    "1": "正面"
+  },
+  "dataset_rows": {
+    "train": 9542,
+    "validation": 1193,
+    "test": 1193
+  },
+  "feature_parameters": {
+    "analyzer": "char",
+    "ngram_range": [
+      1,
+      3
+    ],
+    "lowercase": false,
+    "min_df": 1,
+    "max_df": 1.0,
+    "max_features": null,
+    "dtype": "float32",
+    "features": 155357
+  },
+  "training": {
+    "accuracy": 0.9276881156990149,
+    "macro_f1": 0.9154679487228868,
+    "classification_report": {
+      "负面": {
+        "precision": 0.9167033935654474,
+        "recall": 0.9806694955209807,
+        "f1-score": 0.9476082004555809,
+        "support": 6363.0
+      },
+      "正面": {
+        "precision": 0.9550274223034735,
+        "recall": 0.8216420257942749,
+        "f1-score": 0.8833276969901928,
+        "support": 3179.0
+      },
+      "accuracy": 0.9276881156990149,
+      "macro avg": {
+        "precision": 0.9358654079344604,
+        "recall": 0.9011557606576278,
+        "f1-score": 0.9154679487228868,
+        "support": 9542.0
+      },
+      "weighted avg": {
+        "precision": 0.9294713758918134,
+        "recall": 0.9276881156990149,
+        "f1-score": 0.9261925936104259,
+        "support": 9542.0
+      }
+    },
+    "confusion_matrix_true_rows_predicted_columns": [
+      [
+        6240,
+        123
+      ],
+      [
+        567,
+        2612
+      ]
+    ]
+  },
+  "validation_original": {
+    "accuracy": 0.8952221290863369,
+    "macro_f1": 0.8765473491104372,
+    "classification_report": {
+      "负面": {
+        "precision": 0.888631090487239,
+        "recall": 0.9635220125786164,
+        "f1-score": 0.9245624622812312,
+        "support": 795.0
+      },
+      "正面": {
+        "precision": 0.9123867069486404,
+        "recall": 0.7587939698492462,
+        "f1-score": 0.8285322359396433,
+        "support": 398.0
+      },
+      "accuracy": 0.8952221290863369,
+      "macro avg": {
+        "precision": 0.9005088987179397,
+        "recall": 0.8611579912139313,
+        "f1-score": 0.8765473491104372,
+        "support": 1193.0
+      },
+      "weighted avg": {
+        "precision": 0.8965562668088131,
+        "recall": 0.8952221290863369,
+        "f1-score": 0.8925255552536101,
+        "support": 1193.0
+      }
+    },
+    "confusion_matrix_true_rows_predicted_columns": [
+      [
+        766,
+        29
+      ],
+      [
+        96,
+        302
+      ]
+    ]
+  },
+  "validation_revised28": {
+    "accuracy": 0.9186923721709975,
+    "macro_f1": 0.9029877209940236,
+    "confusion_matrix": [
+      [
+        788,
+        23
+      ],
+      [
+        74,
+        308
+      ]
+    ]
+  },
+  "final_test": {
+    "rows": 1193,
+    "accuracy": 0.9002514668901928,
+    "macro_f1": 0.8815533138156791,
+    "recall_negative": 0.9723618090452262,
+    "recall_positive": 0.7556675062972292,
+    "classification_report": {
+      "0": {
+        "precision": 0.8886337543053962,
+        "recall": 0.9723618090452262,
+        "f1-score": 0.9286142771445711,
+        "support": 796.0
+      },
+      "1": {
+        "precision": 0.9316770186335404,
+        "recall": 0.7556675062972292,
+        "f1-score": 0.8344923504867872,
+        "support": 397.0
+      },
+      "accuracy": 0.9002514668901928,
+      "macro avg": {
+        "precision": 0.9101553864694683,
+        "recall": 0.8640146576712278,
+        "f1-score": 0.8815533138156791,
+        "support": 1193.0
+      },
+      "weighted avg": {
+        "precision": 0.902957455846279,
+        "recall": 0.9002514668901928,
+        "f1-score": 0.8972928983657444,
+        "support": 1193.0
+      }
+    },
+    "confusion_matrix_true_rows_pred_columns": [
+      [
+        774,
+        22
+      ],
+      [
+        97,
+        300
+      ]
+    ]
+  },
+  "validation_note": "28 条定向标签审核，预测保持不变，仅作补充分析，不代表模型提升。",
+  "test_note": "用户先确定普通 LR，再固定配置评估。相同测试数据此前已由助手用于加权 LR 的两次评估；本成绩不作为后续调参依据。",
+  "selection_rule": "用户指定其本机训练的普通 LR，不依据测试成绩选择模型。"
+}

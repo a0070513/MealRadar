@@ -1,9 +1,9 @@
 {
-  "selected_model": "ordinary_logistic_regression",
-  "pipeline_sha256": "8519ce0188b3a4cf7e56d34f9d5e295b2fc9e70f641042b60e1c1aab9c576324",
+  "selected_model": "balanced_logistic_regression",
+  "pipeline_sha256": "f3a14ef2a2003e7c007ed02738bf6568e167ca0d6c8b332c9482ffbde526ff06",
   "model_parameters": {
     "C": 1.0,
-    "class_weight": null,
+    "class_weight": "balanced",
     "dual": false,
     "fit_intercept": true,
     "intercept_scaling": 1,
@@ -18,10 +18,6 @@
     "warm_start": false
   },
   "model_file_size_bytes": 4201952,
-  "test_sha256": "bea8ef49f09f2ec1073ff943b094d3ba17d9c1939159fcfd031d9812596379e5",
-  "evaluated_at_Asia_Shanghai": "2026-11-14T14:01:35.581800+08:00",
-  "python_version": "3.11.16 | packaged by Anaconda, Inc. | (main, Aug 27 2026, 14:36:16) [MSC v.1942 64 bit (AMD64)]",
-  "sklearn_version": "1.9.1",
   "labels": {
     "0": "负面",
     "1": "正面"
@@ -44,147 +40,160 @@
     "dtype": "float32",
     "features": 155357
   },
-  "training": {
-    "accuracy": 0.9276881156990149,
-    "macro_f1": 0.9154679487228868,
-    "classification_report": {
-      "负面": {
-        "precision": 0.9167033935654474,
-        "recall": 0.9806694955209807,
-        "f1-score": 0.9476082004555809,
-        "support": 6363.0
-      },
-      "正面": {
-        "precision": 0.9550274223034735,
-        "recall": 0.8216420257942749,
-        "f1-score": 0.8833276969901928,
-        "support": 3179.0
-      },
-      "accuracy": 0.9276881156990149,
-      "macro avg": {
-        "precision": 0.9358654079344604,
-        "recall": 0.9011557606576278,
-        "f1-score": 0.9154679487228868,
-        "support": 9542.0
-      },
-      "weighted avg": {
-        "precision": 0.9294713758918134,
-        "recall": 0.9276881156990149,
-        "f1-score": 0.9261925936104259,
-        "support": 9542.0
-      }
-    },
-    "confusion_matrix_true_rows_predicted_columns": [
-      [
-        6240,
-        123
-      ],
-      [
-        567,
-        2612
-      ]
-    ]
-  },
+  "python_version": "3.11.16 | packaged by Anaconda, Inc. | (main, Aug 27 2026, 14:36:16) [MSC v.1942 64 bit (AMD64)]",
+  "sklearn_version": "1.9.1",
   "validation_original": {
-    "accuracy": 0.8952221290863369,
-    "macro_f1": 0.8765473491104372,
+    "accuracy": 0.8985750209555742,
+    "macro_f1": 0.885289646562774,
     "classification_report": {
-      "负面": {
-        "precision": 0.888631090487239,
-        "recall": 0.9635220125786164,
-        "f1-score": 0.9245624622812312,
+      "0": {
+        "precision": 0.9191542288557214,
+        "recall": 0.929559748427673,
+        "f1-score": 0.9243277048155097,
         "support": 795.0
       },
-      "正面": {
-        "precision": 0.9123867069486404,
-        "recall": 0.7587939698492462,
-        "f1-score": 0.8285322359396433,
+      "1": {
+        "precision": 0.8560411311053985,
+        "recall": 0.8366834170854272,
+        "f1-score": 0.8462515883100381,
         "support": 398.0
       },
-      "accuracy": 0.8952221290863369,
+      "accuracy": 0.8985750209555742,
       "macro avg": {
-        "precision": 0.9005088987179397,
-        "recall": 0.8611579912139313,
-        "f1-score": 0.8765473491104372,
+        "precision": 0.8875976799805599,
+        "recall": 0.8831215827565501,
+        "f1-score": 0.885289646562774,
         "support": 1193.0
       },
       "weighted avg": {
-        "precision": 0.8965562668088131,
-        "recall": 0.8952221290863369,
-        "f1-score": 0.8925255552536101,
+        "precision": 0.898098895322923,
+        "recall": 0.8985750209555742,
+        "f1-score": 0.8982805175823348,
         "support": 1193.0
       }
     },
-    "confusion_matrix_true_rows_predicted_columns": [
+    "confusion_matrix": [
       [
-        766,
-        29
+        739,
+        56
       ],
       [
-        96,
-        302
+        65,
+        333
       ]
     ]
   },
   "validation_revised28": {
-    "accuracy": 0.9186923721709975,
-    "macro_f1": 0.9029877209940236,
+    "accuracy": 0.9203688181056161,
+    "macro_f1": 0.9089799343862058,
+    "negative_precision": 0.945273631840796,
+    "negative_recall": 0.93711467324291,
+    "negative_f1": 0.9411764705882353,
+    "positive_precision": 0.8688946015424165,
+    "positive_recall": 0.8848167539267016,
+    "positive_f1": 0.8767833981841764,
+    "classification_report": {
+      "0": {
+        "precision": 0.945273631840796,
+        "recall": 0.93711467324291,
+        "f1-score": 0.9411764705882353,
+        "support": 811.0
+      },
+      "1": {
+        "precision": 0.8688946015424165,
+        "recall": 0.8848167539267016,
+        "f1-score": 0.8767833981841764,
+        "support": 382.0
+      },
+      "accuracy": 0.9203688181056161,
+      "macro avg": {
+        "precision": 0.9070841166916063,
+        "recall": 0.9109657135848057,
+        "f1-score": 0.9089799343862058,
+        "support": 1193.0
+      },
+      "weighted avg": {
+        "precision": 0.9208169767075345,
+        "recall": 0.9203688181056161,
+        "f1-score": 0.9205577332384024,
+        "support": 1193.0
+      }
+    },
     "confusion_matrix": [
       [
-        788,
-        23
+        760,
+        51
       ],
       [
-        74,
-        308
+        44,
+        338
       ]
     ]
   },
   "final_test": {
     "rows": 1193,
-    "accuracy": 0.9002514668901928,
-    "macro_f1": 0.8815533138156791,
-    "recall_negative": 0.9723618090452262,
-    "recall_positive": 0.7556675062972292,
+    "accuracy": 0.8994132439228835,
+    "macro_f1": 0.8861641221374046,
+    "recall_negative": 0.9296482412060302,
+    "recall_positive": 0.8387909319899244,
     "classification_report": {
       "0": {
-        "precision": 0.8886337543053962,
-        "recall": 0.9723618090452262,
-        "f1-score": 0.9286142771445711,
+        "precision": 0.9203980099502488,
+        "recall": 0.9296482412060302,
+        "f1-score": 0.925,
         "support": 796.0
       },
       "1": {
-        "precision": 0.9316770186335404,
-        "recall": 0.7556675062972292,
-        "f1-score": 0.8344923504867872,
+        "precision": 0.8560411311053985,
+        "recall": 0.8387909319899244,
+        "f1-score": 0.8473282442748091,
         "support": 397.0
       },
-      "accuracy": 0.9002514668901928,
+      "accuracy": 0.8994132439228835,
       "macro avg": {
-        "precision": 0.9101553864694683,
-        "recall": 0.8640146576712278,
-        "f1-score": 0.8815533138156791,
+        "precision": 0.8882195705278236,
+        "recall": 0.8842195865979773,
+        "f1-score": 0.8861641221374046,
         "support": 1193.0
       },
       "weighted avg": {
-        "precision": 0.902957455846279,
-        "recall": 0.9002514668901928,
-        "f1-score": 0.8972928983657444,
+        "precision": 0.8989816806112667,
+        "recall": 0.8994132439228835,
+        "f1-score": 0.8991528189246432,
         "support": 1193.0
       }
     },
     "confusion_matrix_true_rows_pred_columns": [
       [
-        774,
-        22
+        740,
+        56
       ],
       [
-        97,
-        300
+        64,
+        333
       ]
     ]
   },
-  "validation_note": "28 条定向标签审核，预测保持不变，仅作补充分析，不代表模型提升。",
-  "test_note": "用户先确定普通 LR，再固定配置评估。相同测试数据此前已由助手用于加权 LR 的两次评估；本成绩不作为后续调参依据。",
-  "selection_rule": "用户指定其本机训练的普通 LR，不依据测试成绩选择模型。"
+  "test_sha256": "bea8ef49f09f2ec1073ff943b094d3ba17d9c1939159fcfd031d9812596379e5",
+  "validation_note": "原验证成绩来自用户2026-11-17本机运行。修订28条成绩引用同哈希模型的历史报告；定向审核只作补充，不代表重新训练提升。",
+  "test_note": "引用2026-11-14助手执行的历史测试评估；溯源确认11:29、12:12两次执行，不能称为首次盲测。2026-11-17用户仅训练和验证；模型哈希与历史测试模型一致。本次切换未读取或重跑测试集。",
+  "selection_rule": "用户于2026-11-19决定采用Balanced，依据兼顾正负情感的产品目标及原验证Macro-F1；负面召回有所下降。已知历史测试成绩，不将其包装成新的盲测或用其继续调参。",
+  "provenance": {
+    "user_training_run": "balanced_lr_20261117_134056_068711_3aca76e7",
+    "trained_by": "user",
+    "training_time_Asia_Shanghai": "2026-11-17T13:40:56.068711+08:00",
+    "historical_test_report": "history/balanced_test_20261114.json",
+    "historical_test_report_sha256": "24f17d7049a99ff508ddf4fd4e2078910a7fc64ce7e940915277bae033e2ec54",
+    "historical_test_report_time_Asia_Shanghai": "2026-11-14T12:12:52.015715+08:00",
+    "historical_test_executor": "assistant",
+    "historical_test_execution_count": 2,
+    "user_run_metrics_sha256": "62d04dcb43db6471112d530326727b23b0c50e6d8cbd20a6bf3fce45a4b2d214"
+  },
+  "migration": {
+    "date_Asia_Shanghai": "2026-11-19",
+    "test_set_read": false,
+    "trained": false,
+    "uploaded": false,
+    "deployed": false
+  }
 }

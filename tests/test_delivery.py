@@ -7,15 +7,31 @@ from pathlib import Path
 from streamlit.testing.v1 import AppTest
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED = '8519ce0188b3a4cf7e56d34f9d5e295b2fc9e70f641042b60e1c1aab9c576324'
+EXPECTED = 'f3a14ef2a2003e7c007ed02738bf6568e167ca0d6c8b332c9482ffbde526ff06'
 
 class DeliveryTests(unittest.TestCase):
     def test_model_and_report_identity(self):
         self.assertEqual(hashlib.sha256((ROOT/'models/mealradar_pipeline.joblib').read_bytes()).hexdigest(), EXPECTED)
         report = json.loads((ROOT/'reports/metrics.json').read_text(encoding='utf-8'))
         self.assertEqual(report['pipeline_sha256'], EXPECTED)
-        self.assertIsNone(report['model_parameters']['class_weight'])
+        self.assertEqual(report['model_parameters']['class_weight'], 'balanced')
         self.assertEqual(sum(map(sum, report['final_test']['confusion_matrix_true_rows_pred_columns'])), 1193)
+
+    def test_balanced_page_report_and_case(self):
+        import joblib
+        model = joblib.load(ROOT/'models/mealradar_pipeline.joblib')
+        self.assertEqual(model.named_steps['classifier'].class_weight, 'balanced')
+        case = json.loads((ROOT/'reports/error_case.json').read_text(encoding='utf-8'))
+        self.assertEqual(case['pipeline_sha256'], EXPECTED)
+        self.assertEqual(int(model.predict([case['review']])[0]), case['predicted_label'])
+        report = json.loads((ROOT/'reports/metrics.json').read_text(encoding='utf-8'))
+        self.assertEqual(report['final_test']['confusion_matrix_true_rows_pred_columns'], [[740,56],[64,333]])
+        self.assertFalse(report['migration']['test_set_read'])
+        app = AppTest.from_file(str(ROOT/'app.py'), default_timeout=30).run(timeout=30)
+        self.assertFalse(app.exception)
+        self.assertTrue(any('Balanced' in item.value for item in app.subheader))
+        self.assertEqual([item.value for item in app.metric], ['89.94%', '0.8862', '92.96%'])
+        self.assertFalse(any('暂时不可用' in item.value for item in app.warning))
 
     def test_single_flow(self):
         app = AppTest.from_file(str(ROOT/'app.py'), default_timeout=30).run(timeout=30)
