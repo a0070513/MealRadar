@@ -15,6 +15,7 @@ sample_20*.csv
 review20_feature_evidence.json
 reports/final_test_started.json
 models/*.joblib
+!models/mealradar_pipeline.joblib
 MealRadar_*.zip
 local_archive/
 final_test_private/
