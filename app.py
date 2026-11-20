@@ -8,6 +8,230 @@ from pathlib import Path
 import joblib
 import pandas as pd
 import streamlit as st
+# Character-fragment helpers are embedded so this app deploys as one file.
+# Embedded fragment analysis and presentation helpers.
+import unicodedata
+import numpy as np
+import pandas as pd
+
+
+def model_parts(model):
+    vectorizer = model.named_steps['tfidf']
+    classifier = model.named_steps['classifier']
+    if list(classifier.classes_) != [0, 1] or vectorizer.analyzer != 'char':
+        raise ValueError('需要标签为 0/1 的字符级二分类模型')
+    return vectorizer, classifier
+
+
+def visible_fragment(fragment, min_chars=2):
+    return min_chars <= len(fragment) <= 3 and all(
+        unicodedata.category(c)[0] in 'LN' for c in fragment)
+
+
+def explain_review(model, text):
+    vectorizer, classifier = model_parts(model)
+    x = vectorizer.transform([text]).tocsr()
+    names = vectorizer.get_feature_names_out()
+    contributions = x.data.astype(float) * classifier.coef_[0, x.indices]
+    features = pd.DataFrame({'fragment': names[x.indices], 'tfidf': x.data,
+                             'weight': classifier.coef_[0, x.indices],
+                             'contribution': contributions})
+    intercept = float(classifier.intercept_[0])
+    decision = float(model.decision_function([text])[0])
+    reconstructed = intercept + float(contributions.sum())
+    return dict(features=features, intercept=intercept, decision=decision,
+                reconstructed=reconstructed, error=abs(reconstructed-decision),
+                verified=bool(np.isclose(reconstructed, decision, rtol=1e-7, atol=1e-8)))
+
+
+def analyze_groups(model, texts, labels, min_chars=2):
+    vectorizer, classifier = model_parts(model)
+    names = vectorizer.get_feature_names_out()
+    eligible = np.array([visible_fragment(s, min_chars) for s in names])
+    labels = np.asarray(labels)
+    texts = np.asarray(texts, dtype=object)
+    if len(texts) != len(labels):
+        raise ValueError('评论与标签数量不一致')
+    result = {'sizes': {}}
+    for name, direction in [('正面', 1), ('负面', -1)]:
+        selected = texts[labels == name].tolist()
+        n = len(selected)
+        result['sizes'][name] = n
+        table = pd.DataFrame(columns=['fragment', 'count', 'coverage', 'support'])
+        if n:
+            x = vectorizer.transform(selected).tocsr()
+            counts = np.asarray(x.getnnz(axis=0)).ravel()
+            indices = np.flatnonzero(eligible & (counts > 0))
+            # Binary LR has a fixed coefficient sign per feature. Absent features
+            # contribute zero; denominator includes every analyzed row in the group.
+            means = np.asarray(x.mean(axis=0)).ravel().astype(float)
+            support = means * np.maximum(direction * classifier.coef_[0], 0)
+            table = pd.DataFrame({'fragment': names[indices], 'count': counts[indices],
+                                  'coverage': counts[indices] / n, 'support': support[indices]})
+            table = table.sort_values(['count', 'fragment'], ascending=[False, True]).reset_index(drop=True)
+        result[name] = table
+    return result
+
+
+def matching_rows(model, texts, fragment):
+    """Use the fitted analyzer, including its preprocessing, to match originals."""
+    analyzer = model.named_steps['tfidf'].build_analyzer()
+    return [i for i, text in enumerate(texts) if fragment in analyzer(text)]
+
+# Embedded fragment analysis and presentation helpers.
+from io import BytesIO
+from pathlib import Path
+import os
+import math
+import pandas as pd
+import streamlit as st
+from PIL import Image, ImageDraw, ImageFont
+
+
+def chinese_font():
+    candidates = [os.environ.get('MEALRADAR_FONT', ''),
+                  str(Path(__file__).parent / 'assets/NotoSansCJKsc-Regular.otf'),
+                  'C:/Windows/Fonts/msyh.ttc',
+                  '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc']
+    return next((p for p in candidates if p and Path(p).is_file()), None)
+
+
+def cloud_png(frequencies, font_path):
+    """Deterministic non-overlapping layout; font area scales with row count."""
+    canvas = Image.new('RGB', (800, 380), '#f4f7fb')
+    draw = ImageDraw.Draw(canvas)
+    boxes = []
+    maximum = max(frequencies.values())
+    for index, (word, count) in enumerate(frequencies.items()):
+        font = ImageFont.truetype(font_path, max(18, round(72 * math.sqrt(count / maximum))))
+        bounds = draw.textbbox((0, 0), word, font=font)
+        width, height = bounds[2] - bounds[0], bounds[3] - bounds[1]
+        for step in range(2400):
+            angle, radius = step * .21, step * .15
+            x = int(400 + math.cos(angle) * radius * 1.7 - width / 2)
+            y = int(190 + math.sin(angle) * radius - height / 2)
+            box = (x-5, y-5, x+width+5, y+height+5)
+            if box[0] < 0 or box[1] < 0 or box[2] > 800 or box[3] > 380:
+                continue
+            if any(box[0] < b[2] and box[2] > b[0] and box[1] < b[3] and box[3] > b[1] for b in boxes):
+                continue
+            draw.text((x-bounds[0], y-bounds[1]), word, font=font,
+                      fill=['#126b70', '#3448a0', '#974b30'][index % 3])
+            boxes.append(box)
+            break
+    output = BytesIO()
+    canvas.save(output, format='PNG')
+    return output.getvalue()
+
+
+
+def cloud_svg(frequencies):
+    """Browser-rendered Chinese text needs no server-side font file."""
+    from html import escape
+    positions = [(133, 55), (400, 55), (667, 55), (230, 145), (570, 145),
+                 (133, 235), (400, 235), (667, 235), (230, 325), (570, 325)]
+    maximum = max(frequencies.values())
+    parts = ['<svg xmlns="http://www.w3.org/2000/svg" width="800" height="380" viewBox="0 0 800 380">',
+             '<rect width="800" height="380" fill="#f4f7fb"/>']
+    for index, ((word, count), (x, y)) in enumerate(zip(frequencies.items(), positions)):
+        size = max(20, round(64 * math.sqrt(count / maximum)))
+        color = ['#126b70', '#3448a0', '#974b30'][index % 3]
+        parts.append(f'<text x="{x}" y="{y}" text-anchor="middle" dominant-baseline="middle" font-family="Microsoft YaHei, PingFang SC, Noto Sans CJK SC, sans-serif" font-size="{size}" fill="{color}">{escape(word)}</text>')
+    return ''.join(parts) + '</svg>'
+
+
+def display_table(table, contribution=False):
+    columns = ['fragment', 'count', 'coverage'] + (['support'] if contribution else [])
+    shown = table[columns].rename(columns={'fragment': '字符片段', 'count': '覆盖条数',
+        'coverage': '组内覆盖率', 'support': '平均同方向贡献'})
+    shown['组内覆盖率'] = shown['组内覆盖率'].map(lambda v: f'{v:.1%}')
+    st.dataframe(shown, hide_index=True, width='stretch')
+
+
+def render_single(model, text):
+    st.subheader('模型真实特征贡献')
+    result = explain_review(model, text)
+    st.caption('每项贡献 = 模型系数 × 本条评论的 TF-IDF。正值推动正面，负值推动负面；这是模型内部的加法解释，不是语义或因果结论。')
+    if not result['verified']:
+        st.error('贡献校验未通过，暂不展示解释。')
+        return
+    st.caption(f"校验通过：截距 {result['intercept']:.8f} + 全部贡献 {result['features'].contribution.sum():.8f} = {result['reconstructed']:.8f}；decision_function = {result['decision']:.8f}；误差 {result['error']:.2e}。")
+    for col, direction, name in zip(st.columns(2), [1, -1], ['支持正面', '支持负面']):
+        with col:
+            st.markdown(f'**{name} · Top 10**')
+            frame = result['features']
+            frame = frame[frame.contribution * direction > 0].sort_values('contribution', ascending=direction < 0).head(10)
+            if frame.empty:
+                st.info('没有该方向的非零贡献。')
+            else:
+                st.dataframe(frame[['fragment', 'contribution']].rename(columns={'fragment': '字符片段', 'contribution': '贡献'}), hide_index=True)
+    with st.expander('全部非零特征与计算明细（含标点、空白）'):
+        st.dataframe(result['features'].rename(columns={'fragment': '字符片段', 'tfidf': 'TF-IDF', 'weight': '模型系数', 'contribution': '贡献'}), hide_index=True)
+    st.caption('上方 Top 10 只展示部分特征；校验使用全部非零特征和截距。贡献不等于概率变化。')
+
+
+def render_batch(model, results, identity):
+    st.divider()
+    st.subheader('高频片段')
+    st.caption('仅使用当前已拟合 TF-IDF 词表中的字符片段，不做分词或完整短语提取。按预测类别分组，未分析行不参与；一行内重复只计一次，重复评论行仍分别计数。排除含标点、空白及符号的片段。')
+    mode = st.radio('字符范围', ['2–3 字符（默认）', '全部 1–3 字符'], horizontal=True)
+    top = st.selectbox('高频片段数量', [5, 10])
+    minimum = 2 if mode.startswith('2') else 1
+    cache_key = (identity, minimum)
+    cached = st.session_state.get('fragment_cache')
+    if cached is None or cached[0] != cache_key:
+        with st.spinner('正在统计字符片段…'):
+            data = analyze_groups(model, results.review.tolist(), results['预测情感'].tolist(), minimum)
+        st.session_state.fragment_cache = (cache_key, data)
+    else:
+        data = cached[1]
+    for col, name in zip(st.columns(2), ['正面', '负面']):
+        with col:
+            st.markdown(f"**预测{name} · {data['sizes'][name]} 条**")
+            if data['sizes'][name] < 10:
+                st.caption('样本少于 10 条，覆盖率容易波动，请结合原文。')
+            table = data[name].head(top)
+            if table.empty:
+                st.info('本组暂无符合范围的片段。')
+                continue
+            display_table(table)
+            font = chinese_font()
+            if font:
+                st.image(cloud_png(dict(zip(table.fragment, table['count'])), font), caption=f'预测{name}片段词云 · 字号按覆盖条数缩放')
+            else:
+                st.image(cloud_svg(dict(zip(table.fragment, table['count']))), caption=f'预测{name}片段词云 · 字号按覆盖条数缩放')
+    union = list(dict.fromkeys(data['正面'].head(top).fragment.tolist() + data['负面'].head(top).fragment.tolist()))
+    if union:
+        st.markdown('**正负覆盖率对比**')
+        comparison = pd.DataFrame({name: data[name].set_index('fragment').coverage.reindex(union, fill_value=0).astype(float)*100 for name in ['正面', '负面']})
+        st.bar_chart(comparison, y_label='组内覆盖率（%）', stack=False)
+        st.caption('每组各用自己的评论条数作分母；空组显示 0，不表示观察到零覆盖。')
+    st.subheader('模型贡献片段')
+    st.caption('与高频统计分开：每组按平均同方向贡献排序取 Top 5。正面取 max(w×TF-IDF, 0)，负面取 max(−w×TF-IDF, 0)，再除以该组全部已分析行数（未出现计 0）。数值是对数几率方向的支持强度，不是概率、完整语义或商家质量。字符范围沿用上方选择。')
+    contribution_options = []
+    for col, name in zip(st.columns(2), ['正面', '负面']):
+        with col:
+            st.markdown(f'**支持预测{name} · Top 5**')
+            table = data[name]
+            table = table[table.support > 0].sort_values(['support', 'fragment'], ascending=[False, True]).head(5)
+            contribution_options.extend(table.fragment.tolist())
+            if table.empty:
+                st.info('本组暂无同方向贡献片段。')
+            else:
+                display_table(table, True)
+    options = list(dict.fromkeys(union + contribution_options))
+    if options:
+        st.subheader('查看匹配的真实原文')
+        fragment = st.selectbox('选择片段（来自上述高频 / 贡献结果）', options, key=f'fragment_{identity}_{minimum}_{top}')
+        group = st.radio('原文范围', ['全部已分析', '正面', '负面'], horizontal=True)
+        original = results[results['预测情感'].isin(['正面', '负面'])].copy()
+        if group != '全部已分析':
+            original = original[original['预测情感'] == group]
+        original.insert(0, '数据行号', original.index + 1)
+        indices = matching_rows(model, original.review.tolist(), fragment)
+        st.caption(f'共匹配 {len(indices)} 条；数据行号从表头之后的第一条记录开始，保留重复行。')
+        st.dataframe(original.iloc[indices], hide_index=True, width='stretch')
+
 
 MODEL_PATH = Path(__file__).resolve().parent / "models" / "mealradar_pipeline.joblib"
 METRICS_PATH = Path(__file__).resolve().parent / "reports" / "metrics.json"
@@ -87,6 +311,7 @@ def single_review():
     (st.success if label == "正面" else st.warning)(f"预测结果：{label}")
     st.metric("正面估计分数", f"{scores[0]:.1%}")
     st.caption("分数为模型估计值，未进行概率校准。褒贬混合、反讽或缺少语境时，结果可能不准确。")
+    render_single(load_model(), text)
 
 
 def safe_csv_cell(value):
@@ -107,8 +332,16 @@ def batch_reviews():
         st.caption("示例文件暂不可用，你仍可上传自己的 CSV。")
     upload = st.file_uploader("评论 CSV", type=["csv"], max_upload_size=10)
     if upload is None:
+        st.session_state.pop('batch_results', None)
+        st.session_state.pop('fragment_cache', None)
         return
     raw = upload.getvalue()
+    if len(raw) > 10 * 1024 * 1024:
+        st.error('文件最大 10 MB。')
+        return
+    if st.session_state.get('batch_results', (None,))[0] != (EXPECTED_MODEL_SHA256, raw):
+        st.session_state.pop('batch_results', None)
+        st.session_state.pop('fragment_cache', None)
     submitted = st.button("分析整批评论", type="primary")
     cache = st.session_state.get("batch_results")
     if cache is not None and cache[0] == (EXPECTED_MODEL_SHA256, raw):
@@ -155,6 +388,7 @@ def batch_reviews():
     st.caption("分数说明：“正面估计分数”是模型估计的正面概率，范围为 0～1。越接近 1，模型越倾向正面；越接近 0，越倾向负面。")
     st.caption("当前模型以 0.5 为默认分界：大于 0.5 预测为正面，小于或等于 0.5 预测为负面。表格显示值可能经过四舍五入，分类以模型原始输出为准。")
     st.caption("分数未经独立概率校准，不代表预测一定正确；接近 0.5 的评论处在分类分界附近，建议结合原文判断。")
+    render_batch(load_model(), results, EXPECTED_MODEL_SHA256 + hashlib.sha256(raw).hexdigest())
 
 
 st.set_page_config(page_title="食评雷达 MealRadar", layout="centered")
