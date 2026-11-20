@@ -1,0 +1,159 @@
+{
+  "date_Asia_Shanghai": "2026-11-14T12:12:52.015715+08:00",
+  "selected_model": "C_BalancedLogisticRegression",
+  "selection_rule": "原标签验证 Macro-F1 优先；完全相同时以负面 Recall、Accuracy 依次判定。修订标签指标作补充分析。",
+  "validation_original": {
+    "accuracy": 0.8985750209555742,
+    "macro_f1": 0.885289646562774,
+    "negative_precision": 0.9191542288557214,
+    "negative_recall": 0.929559748427673,
+    "negative_f1": 0.9243277048155097,
+    "positive_precision": 0.8560411311053985,
+    "positive_recall": 0.8366834170854272,
+    "positive_f1": 0.8462515883100381,
+    "classification_report": {
+      "0": {
+        "precision": 0.9191542288557214,
+        "recall": 0.929559748427673,
+        "f1-score": 0.9243277048155097,
+        "support": 795.0
+      },
+      "1": {
+        "precision": 0.8560411311053985,
+        "recall": 0.8366834170854272,
+        "f1-score": 0.8462515883100381,
+        "support": 398.0
+      },
+      "accuracy": 0.8985750209555742,
+      "macro avg": {
+        "precision": 0.8875976799805599,
+        "recall": 0.8831215827565501,
+        "f1-score": 0.885289646562774,
+        "support": 1193.0
+      },
+      "weighted avg": {
+        "precision": 0.898098895322923,
+        "recall": 0.8985750209555742,
+        "f1-score": 0.8982805175823348,
+        "support": 1193.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        739,
+        56
+      ],
+      [
+        65,
+        333
+      ]
+    ]
+  },
+  "validation_revised28": {
+    "accuracy": 0.9203688181056161,
+    "macro_f1": 0.9089799343862058,
+    "negative_precision": 0.945273631840796,
+    "negative_recall": 0.93711467324291,
+    "negative_f1": 0.9411764705882353,
+    "positive_precision": 0.8688946015424165,
+    "positive_recall": 0.8848167539267016,
+    "positive_f1": 0.8767833981841764,
+    "classification_report": {
+      "0": {
+        "precision": 0.945273631840796,
+        "recall": 0.93711467324291,
+        "f1-score": 0.9411764705882353,
+        "support": 811.0
+      },
+      "1": {
+        "precision": 0.8688946015424165,
+        "recall": 0.8848167539267016,
+        "f1-score": 0.8767833981841764,
+        "support": 382.0
+      },
+      "accuracy": 0.9203688181056161,
+      "macro avg": {
+        "precision": 0.9070841166916063,
+        "recall": 0.9109657135848057,
+        "f1-score": 0.9089799343862058,
+        "support": 1193.0
+      },
+      "weighted avg": {
+        "precision": 0.9208169767075345,
+        "recall": 0.9203688181056161,
+        "f1-score": 0.9205577332384024,
+        "support": 1193.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        760,
+        51
+      ],
+      [
+        44,
+        338
+      ]
+    ]
+  },
+  "test_original": {
+    "accuracy": 0.8994132439228835,
+    "macro_f1": 0.8861641221374046,
+    "negative_precision": 0.9203980099502488,
+    "negative_recall": 0.9296482412060302,
+    "negative_f1": 0.925,
+    "positive_precision": 0.8560411311053985,
+    "positive_recall": 0.8387909319899244,
+    "positive_f1": 0.8473282442748091,
+    "classification_report": {
+      "0": {
+        "precision": 0.9203980099502488,
+        "recall": 0.9296482412060302,
+        "f1-score": 0.925,
+        "support": 796.0
+      },
+      "1": {
+        "precision": 0.8560411311053985,
+        "recall": 0.8387909319899244,
+        "f1-score": 0.8473282442748091,
+        "support": 397.0
+      },
+      "accuracy": 0.8994132439228835,
+      "macro avg": {
+        "precision": 0.8882195705278236,
+        "recall": 0.8842195865979773,
+        "f1-score": 0.8861641221374046,
+        "support": 1193.0
+      },
+      "weighted avg": {
+        "precision": 0.8989816806112667,
+        "recall": 0.8994132439228835,
+        "f1-score": 0.8991528189246432,
+        "support": 1193.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        740,
+        56
+      ],
+      [
+        64,
+        333
+      ]
+    ]
+  },
+  "test_rows": 1193,
+  "test_sha256": "bea8ef49f09f2ec1073ff943b094d3ba17d9c1939159fcfd031d9812596379e5",
+  "model_sha256": "f3a14ef2a2003e7c007ed02738bf6568e167ca0d6c8b332c9482ffbde526ff06",
+  "model_bytes": 4201952,
+  "python": "3.11.16 | packaged by Anaconda, Inc. | (main, Aug 27 2026, 14:36:16) [MSC v.1942 64 bit (AMD64)]",
+  "sklearn": "1.9.1",
+  "labels": {
+    "0": "负面",
+    "1": "正面"
+  },
+  "predict_proba": true,
+  "text_processing": "review原文，字符1～3gram，TF-IDF训练集拟合，连续空白压缩为一个空格",
+  "limitations": "测试采用原参考标签，可能有标签噪声。验证修订是根据普通逻辑回归误判筛选的局部人工审核，仅作补充。预测概率未经独立校准。"
+}

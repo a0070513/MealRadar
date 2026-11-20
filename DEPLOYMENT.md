@@ -1,22 +1,12 @@
-# 发布准备与待办
+# 本地验证与后续同步
 
-已建立私有仓库 https://github.com/a0070513/MealRadar 。采用 Streamlit 和现有 Python 模型。
+2026-11-19：本地默认模型切换为用户亲自训练的Balanced LR。本轮不上传、不部署。当前公网运行状态未核验。
 
-1. GitHub 账户与仓库已建立。上传范围为 delivery/source_review/ 中的代码与汇总材料，不上传整个工作区。
-2. 数据源未提供已确认的模型分发条件。
-3. 条件明确后，将已确认的普通 LR 放到 models/mealradar_pipeline.joblib，核对 README 中哈希。
-4. 在 Streamlit Community Cloud 连接仓库，选择实际分支、app.py 和 Python 3.11。使用 requirements.txt 的训练环境版本；安装失败先查看日志，不随意升级/降级模型依赖。
-5. 部署成功后记录真实地址，通过公网验收两类示例、空输入、连续预测、刷新、批量上传/筛选/下载。本地自动检查不能代替公网验收。
-6. 在最终提交填入网站与仓库链接，更新工作介绍的部署状态。
+1. 先按LOCAL_VALIDATION.md运行检查并手动验证网页。
+2. 同步当前目录或delivery/balanced_20261119中列出的文件，保留目录结构；不要使用旧delivery/source_review快照。GitHub仓库已有模型，新版上传需同时更新模型、app.py、报告与测试。
+3. 模型应位于models/mealradar_pipeline.joblib，SHA-256见models/README.md。普通LR备份及原始数据留在本地。数据分发说明见data/README.md。
+4. GitHub上传由用户亲自执行；上传可能触发已有托管服务的自动更新，上传前确认所连服务状态。本次没有操作托管平台。
+5. 后续若部署，使用app.py、Python 3.11和requirements.txt固定依赖；不要为部署重新训练或重跑测试集。重启应用使新模型生效，再验收单条、批量、筛选、下载和模型报告。
+6. 部署验证后再记录真实网址；本次本地检查不代表公网验收完成。
 
-[官方部署说明](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app)
-
-本机在项目目录、mealradar 环境运行：
-
-```text
-python -m streamlit run app.py
-```
-
-本机地址通常是 http://localhost:8501，以实际启动输出为准。
-
-
+本地命令：python -m streamlit run app.py。地址以终端实际输出为准，通常为http://localhost:8501。

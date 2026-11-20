@@ -15,18 +15,18 @@ EXAMPLE_CSV_PATH = Path(__file__).resolve().parent / "examples" / "reviews.csv"
 LABEL_NAMES = {0: "负面", 1: "正面"}
 MAX_COMMENT = 5000
 MAX_BATCH = 5000
-EXPECTED_MODEL_SHA256 = "8519ce0188b3a4cf7e56d34f9d5e295b2fc9e70f641042b60e1c1aab9c576324"
+EXPECTED_MODEL_SHA256 = "f3a14ef2a2003e7c007ed02738bf6568e167ca0d6c8b332c9482ffbde526ff06"
 
 
 @st.cache_resource(show_spinner="正在加载情感分类模型…")
-def load_model():
-    if hashlib.sha256(MODEL_PATH.read_bytes()).hexdigest() != EXPECTED_MODEL_SHA256:
-        raise ValueError("模型文件与已确认的普通逻辑回归不一致。")
+def load_model(expected_sha256=EXPECTED_MODEL_SHA256):
+    if hashlib.sha256(MODEL_PATH.read_bytes()).hexdigest() != expected_sha256:
+        raise ValueError("模型文件与已确认的 Balanced 逻辑回归不一致。")
     return joblib.load(MODEL_PATH)
 
 
 def predict(texts):
-    model = load_model()
+    model = load_model(EXPECTED_MODEL_SHA256)
     labels = model.predict(texts)
     positive_index = list(model.classes_).index(1)
     scores = model.predict_proba(texts)[:, positive_index]
@@ -111,7 +111,7 @@ def batch_reviews():
     raw = upload.getvalue()
     submitted = st.button("分析整批评论", type="primary")
     cache = st.session_state.get("batch_results")
-    if cache is not None and cache[0] == raw:
+    if cache is not None and cache[0] == (EXPECTED_MODEL_SHA256, raw):
         results = cache[1]
     elif not submitted:
         return
@@ -140,7 +140,7 @@ def batch_reviews():
             return
         results.loc[valid, "预测情感"] = [LABEL_NAMES[int(label)] for label in labels]
         results.loc[valid, "正面估计分数"] = scores
-        st.session_state.batch_results = (raw, results)
+        st.session_state.batch_results = ((EXPECTED_MODEL_SHA256, raw), results)
     counts = results["预测情感"].value_counts().reindex(["正面", "负面", "未分析"], fill_value=0)
     for col, (name, count) in zip(st.columns(3), counts.items()):
         col.metric(name, int(count))
@@ -166,8 +166,8 @@ with single:
 with batch:
     batch_reviews()
 with experiment:
-    st.subheader("字符级 TF-IDF + 普通逻辑回归")
-    st.write("使用本机已训练的普通逻辑回归，保留原始评论输入，由已保存的 Pipeline 完成特征转换与分类。网站运行时不训练模型。")
+    st.subheader("字符级 TF-IDF + Balanced 逻辑回归")
+    st.write("使用本人在本机训练的 Balanced 逻辑回归（class_weight=balanced），保留原始评论输入，由已保存的 Pipeline 完成特征转换与分类。网站运行时不训练模型。")
     try:
         report = json.loads(METRICS_PATH.read_text(encoding="utf-8"))
         if report["pipeline_sha256"] != EXPECTED_MODEL_SHA256:
@@ -187,10 +187,13 @@ with experiment:
         st.write("混淆矩阵：行是真实标签，列是预测标签。")
         st.table(pd.DataFrame(scores["confusion_matrix_true_rows_pred_columns"],
                              index=["真实负面", "真实正面"], columns=["预测负面", "预测正面"]))
-        st.caption(report["test_note"])
+        st.caption("选择依据：兼顾正负情感，原验证 Macro-F1 提升；负面召回有所下降。")
         with st.expander("验证集标签审核说明"):
-            st.write("原验证集：Accuracy 89.52%，Macro-F1 0.8765。修订 28 条标签后：Accuracy 91.87%，Macro-F1 0.9030。")
-            st.write(report["validation_note"])
+            original = report["validation_original"]
+            revised = report["validation_revised28"]
+            st.write(f"原验证集：Accuracy {original['accuracy']:.2%}，Macro-F1 {original['macro_f1']:.4f}。"
+                     f"修订 28 条标签后：Accuracy {revised['accuracy']:.2%}，Macro-F1 {revised['macro_f1']:.4f}。")
+            st.write("修订标签仅用于补充分析，同一组预测保持不变；分数变化不代表模型训练效果提升。")
     except (OSError, ValueError, KeyError, TypeError):
         st.warning("评估报告暂时不可用，单条和批量分析仍可尝试使用。")
     try:
@@ -199,7 +202,7 @@ with experiment:
             raise ValueError("错误案例与模型不一致")
         st.markdown("**真实验证错误案例**")
         st.write(case["review"])
-        st.write("参考标签：负面；模型预测：正面。")
+        st.write(f"参考标签：{LABEL_NAMES[case['reference_label']]}；模型预测：{LABEL_NAMES[case['predicted_label']]}。")
         st.write(case["analysis"])
         st.caption(case["future_work"])
     except (OSError, ValueError, KeyError, TypeError):

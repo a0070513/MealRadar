@@ -1,0 +1,132 @@
+{
+  "date": "2026-11-17",
+  "labels": "original_validation",
+  "rows": 1193,
+  "evaluation": {
+    "plain_lr": {
+      "accuracy": 0.8952221290863369,
+      "macro_f1": 0.8765473491104372,
+      "classification_report": {
+        "0": {
+          "precision": 0.888631090487239,
+          "recall": 0.9635220125786164,
+          "f1-score": 0.9245624622812312,
+          "support": 795.0
+        },
+        "1": {
+          "precision": 0.9123867069486404,
+          "recall": 0.7587939698492462,
+          "f1-score": 0.8285322359396433,
+          "support": 398.0
+        },
+        "accuracy": 0.8952221290863369,
+        "macro avg": {
+          "precision": 0.9005088987179397,
+          "recall": 0.8611579912139313,
+          "f1-score": 0.8765473491104372,
+          "support": 1193.0
+        },
+        "weighted avg": {
+          "precision": 0.8965562668088131,
+          "recall": 0.8952221290863369,
+          "f1-score": 0.8925255552536101,
+          "support": 1193.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          766,
+          29
+        ],
+        [
+          96,
+          302
+        ]
+      ]
+    },
+    "balanced_lr": {
+      "accuracy": 0.8985750209555742,
+      "macro_f1": 0.885289646562774,
+      "classification_report": {
+        "0": {
+          "precision": 0.9191542288557214,
+          "recall": 0.929559748427673,
+          "f1-score": 0.9243277048155097,
+          "support": 795.0
+        },
+        "1": {
+          "precision": 0.8560411311053985,
+          "recall": 0.8366834170854272,
+          "f1-score": 0.8462515883100381,
+          "support": 398.0
+        },
+        "accuracy": 0.8985750209555742,
+        "macro avg": {
+          "precision": 0.8875976799805599,
+          "recall": 0.8831215827565501,
+          "f1-score": 0.885289646562774,
+          "support": 1193.0
+        },
+        "weighted avg": {
+          "precision": 0.898098895322923,
+          "recall": 0.8985750209555742,
+          "f1-score": 0.8982805175823348,
+          "support": 1193.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          739,
+          56
+        ],
+        [
+          65,
+          333
+        ]
+      ]
+    }
+  },
+  "parameters": {
+    "plain_lr": {
+      "C": 1.0,
+      "class_weight": null,
+      "dual": false,
+      "fit_intercept": true,
+      "intercept_scaling": 1,
+      "l1_ratio": 0.0,
+      "max_iter": 1000,
+      "n_jobs": null,
+      "penalty": "deprecated",
+      "random_state": 42,
+      "solver": "liblinear",
+      "tol": 0.0001,
+      "verbose": 0,
+      "warm_start": false
+    },
+    "balanced_lr": {
+      "C": 1.0,
+      "class_weight": "balanced",
+      "dual": false,
+      "fit_intercept": true,
+      "intercept_scaling": 1,
+      "l1_ratio": 0.0,
+      "max_iter": 1000,
+      "n_jobs": null,
+      "penalty": "deprecated",
+      "random_state": 42,
+      "solver": "liblinear",
+      "tol": 0.0001,
+      "verbose": 0,
+      "warm_start": false
+    }
+  },
+  "input_sha256": {
+    "train.csv": "20077226f6c642455d134df90e2d0d71879bf143bba94a51b2ef459e795fc9d2",
+    "validation.csv": "892ef1651caaf345b1a3b7cd7af7ee754b8e8d285074123e4880f76e511acd76",
+    "text_classifier.joblib": "8519ce0188b3a4cf7e56d34f9d5e295b2fc9e70f641042b60e1c1aab9c576324"
+  },
+  "balanced_pipeline_sha256": "f3a14ef2a2003e7c007ed02738bf6568e167ca0d6c8b332c9482ffbde526ff06",
+  "training_executor": "user",
+  "test_set_read": false,
+  "note": "本机复现实验，与助手历史模型文件哈希一致；历史测试记录单独保留。"
+}
